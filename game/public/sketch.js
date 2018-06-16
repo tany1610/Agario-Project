@@ -8,7 +8,7 @@ function setup() {
     createCanvas(600, 600);
     socket = io.connect('http://localhost:3000');
 
-    player = new Blob(0, 0, 64);
+    player = new Blob(0, 0, 64, undefined, true);
 
     let data = {
         x: player.pos.x,
@@ -59,6 +59,7 @@ function rendering(){
         foods[i].show();
         if(player.eats(foods[i])){
             foods.splice(i, 1);
+            player.score += 1;
         }
     }
 
