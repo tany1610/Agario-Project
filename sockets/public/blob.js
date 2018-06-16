@@ -15,6 +15,18 @@ Blob.prototype.constrain = function(){
     this.pos.y = constrain(this.pos.y, -200, 200);
 }
 
+Blob.prototype.eats = function(other){
+    let d = p5.Vector.dist(this.pos, other.pos);
+    if(d < this.r + other.r){
+        let newr = PI * this.r * this.r + PI * other.r * other.r;
+        newr = sqrt(newr / PI);
+        this.r = lerp(newr, this.r, 0.1);
+        return true;
+    }else{
+        return false;
+    }
+}
+
 Blob.prototype.show = function(){
     stroke(0);
     strokeWeight(2);

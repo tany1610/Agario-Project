@@ -2,10 +2,11 @@ var player;
 var zoom = 0;
 var socket;
 var players = new Map();
+var foods = [];
 
 function setup() {
     createCanvas(600, 600);
-    socket = io.connect('http://localhost:65530');
+    socket = io.connect('http://localhost:3000');
 
     player = new Blob(0, 0, 64);
 
@@ -16,6 +17,16 @@ function setup() {
     };
 
     socket.emit('start', data);
+
+    //adding food
+    for(let i = 0; i < 100; i++){
+        var x = random(-width * 2, width * 2);
+        var y = random(-height * 2, height * 2);
+        var r = random(10, 25);
+        let food = new Blob(x, y, r);
+        foods.push(food);
+        
+    }
 }
 
 function draw() {
@@ -35,14 +46,32 @@ function translation(){
 }
 
 function rendering(){
-    for(let player of players){
-        fill(80, 0, 0);
-        ellipse(player[1].x, player[1].y, player[1].r*2, player[1].r*2);
-    }
-
     player.show();
     player.update();
-    player.constrain();
+
+    for(let i = foods.length - 1; i >= 0; i--){
+        foods[i].show();
+        if(player.eats(foods[i])){
+            foods.splice(i, 1);
+        }
+    }
+
+    if(random(1) < 0.01){
+        var x = random(-width * 2, width * 2);
+        var y = random(-height * 2, height * 2);
+        var r = random(10, 25);
+        var food = new Blob(x, y, r);
+        foods.push(food);
+    }
+    
+    for(let player of players){
+        fill(80);
+        if(player[1].id !== socket.id){
+            ellipse(player[1].x, player[1].y, player[1].r*2, player[1].r*2);
+        }
+    }
+    
+    //player.constrain();
 }
 
 function server(){
@@ -57,9 +86,7 @@ function server(){
 }
 
 function addBlobs(blobs){
-    for(var [id, player] of blobs){
-        if(!players.has(id)){
-            players.set(id, player);
-        }
+    for(var [id, player] of blobs){      
+        players.set(id, player);       
     }
 }

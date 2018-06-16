@@ -9,7 +9,7 @@ function Blob(x, y, r, id){
 
 var express = require('express');
 var app = express();
-var port = 65530;
+var port = 3000;
 var server = app.listen(port);
 
 
@@ -18,7 +18,7 @@ app.use(express.static('public'));
 var socket = require('socket.io');
 var io = socket(server);
 
-setInterval(sendBlobs, 1000);
+setInterval(sendBlobs, 0);
 
 function sendBlobs(){
     io.sockets.emit('interval', [...blobs]);
@@ -33,10 +33,9 @@ io.sockets.on('connection', (socket) => {
     }); 
 
     socket.on('update', (data) => {
-        var blob = blobs.get(socket.id);
-        blob.x = data.x;
-        blob.y = data.y;
-        blob.r = data.r;
+        blobs.get(socket.id).x = data.x;
+        blobs.get(socket.id).y = data.y;
+        blobs.get(socket.id).r = data.r;
         // console.log(blob.id);
         // console.log(blob.x + blob.y);
     });
